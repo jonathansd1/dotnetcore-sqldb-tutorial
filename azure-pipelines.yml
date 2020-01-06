@@ -20,3 +20,25 @@ steps:
     command: build
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Package
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: appServiceMVC
+
+- task: AzureWebApp@1
+  displayName: Deploy
+  inputs:
+    azureSubscription: '$(azureServiceConnection)'
+    appType: webAppLinux
+    appName: '$(appName)'
+    package: $(System.ArtifactsDirectory)/**/*.zip
