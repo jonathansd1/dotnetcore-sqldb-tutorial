@@ -39,10 +39,10 @@ Do {
   Start-Sleep 3
   $install = Invoke-RestMethod -Method 'GET' -Headers @{Authorization=("Basic {0}" -f $credentials)} -Uri ("{0}/api/siteextensions" -f $scmUrl)
   $installStatus = ($install | ? {$_.id -match "Dynatrace"}).provisioningState
-}
-Until (($installStatus -eq "Succeeded") -or ($installStatus -eq "Failure"))
+  Write-Output "Extension Install Status: $installStatus"
+} Until (($installStatus -eq "Succeeded") -or ($installStatus -eq "Failure"))
 
-Write-Output "Installation Status: $installStatus"
+Write-Output "Final Extension Install Status: $installStatus"
 
 # Now you can make make queries to the Dynatrace Site Extension API.
 # If it's the first request to the SCM website, the request may fail due to request-timeout.
